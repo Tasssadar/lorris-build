@@ -1,0 +1,34 @@
+FROM ubuntu:16.04
+
+RUN apt-get update && \
+    apt-get install -y mingw-w64-i686-dev mingw-w64-x86-64-dev mingw-w64 mingw-w64-tools \
+    flex bison make build-essential python git curl zip && \
+    apt-get clean
+
+WORKDIR /qtbuild
+ENV QT_VER=5.6.2
+ENV THREADS=2
+
+RUN curl -L https://download.qt.io/archive/qt/5.6/$QT_VER/single/qt-everywhere-opensource-src-$QT_VER.tar.gz | gzip -d | tar -x && \
+    cd qt-everywhere-opensource-src-$QT_VER && \
+    ./configure -xplatform win32-g++ -device-option CROSS_COMPILE=i686-w64-mingw32- -opensource -confirm-license \
+    -qt-zlib -qt-libpng -qt-freetype -prefix /usr/local/qt32 -release -nomake examples -nomake tools -nomake tests \
+    -skip webengine -skip activeqt -skip qt3d -skip qtcanvas3d -skip qtmultimedia && \
+    make -j$THREADS && \
+    make install && \
+    cd .. && rm -rf qt-everywhere-opensource-src-$QT_VER
+
+
+ADD /build /build
+WORKDIR /build
+
+ENTRYPOINT git clone --depth=1 --recursive https://github.com/Tasssadar/Lorris.git && \
+    cd Lorris && \
+    /usr/local/qt32/bin/qmake CONFIG+=release QMAKE_CXXFLAGS+="-march=pentium4 -mfpmath=sse -msse2" QMAKE_CFLAGS+="-march=pentium4 -mfpmath=sse -msse2" -r && \
+    make -j$THREADS && \
+    cd .. && \
+    python2 ./package_lorris.py Lorris package && \
+    cd package && zip -r ../Lorris.zip * && \
+    cp -v ../Lorris.zip /lorris-release/
+
+VOLUME /lorris-release

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Lorris Toolbox
+Comment=Embedded development toolbox!
+GenericName=Data visualisation tool
+Exec=lorris
+Icon=lorris
+Type=Application
+StartupNotify=true
+Categories=Utility;Development;IDE;
+Keywords=lorris;
+
+X-Desktop-File-Install-Version=0.23

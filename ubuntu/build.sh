@@ -14,6 +14,7 @@ GPG_KEY_NAME="tasemnice-apt"
 build=true
 genapt=true
 ignoretmp=false
+ver="1"
 while [ $# -ge 1 ]; do
     case "$1" in
     --nobuild)
@@ -24,6 +25,9 @@ while [ $# -ge 1 ]; do
         ;;
     --ignoretmp)
         ignoretmp=true
+        ;;
+    --ver=*)
+        ver="${1#--ver=}"
         ;;
     *)
         echo "Unknown argument: $1"
@@ -54,7 +58,7 @@ if $build; then
             img="lorris-build_${dist}-${arch}"
             cp -a "${DOCKER_ROOT}/build" "${DOCKER_ROOT}/docker-${arch}/"
             docker build --build-arg DIST_TAG=$dist -t "$img" "${DOCKER_ROOT}/docker-${arch}"
-            docker run -t -v "${TMP_POOL}:/apt-pool" "$img"
+            docker run -t -e DIST_VER=${ver} -v "${TMP_POOL}:/apt-pool" "$img"
         done
     done
 

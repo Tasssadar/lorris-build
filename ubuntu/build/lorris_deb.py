@@ -26,14 +26,15 @@ def get_qt_deps(tag):
     return ", ".join(libs)
 
 if __name__ == "__main__":
-    if len(sys.argv) < 5:
-        print "Usage: %s LORRIS_ROOT DEST_DIR ARCH TAG" % sys.argv[0]
+    if len(sys.argv) < 6:
+        print "Usage: %s LORRIS_ROOT DEST_DIR ARCH TAG DIST_VER" % sys.argv[0]
         sys.exit(1)
     
     root = sys.argv[1]
     destdir = sys.argv[2]
     arch = sys.argv[3]
     tag = sys.argv[4]
+    dist_ver = int(sys.argv[5])
     tmpdir = tempfile.mkdtemp()
 
     if arch != "i386" and arch != "amd64":
@@ -57,8 +58,16 @@ if __name__ == "__main__":
         os.makedirs(trans_path)
         shutil.copy(os.path.join(root, "translations", "Lorris.cs_CZ.qm"), trans_path)
 
+        desktop_path = os.path.join(tmpdir, PREFIX, "share", "applications")
+        os.makedirs(desktop_path)
+        shutil.copy("lorris.desktop", desktop_path)
+
+        pixmap_path = os.path.join(tmpdir, PREFIX, "share", "pixmaps")
+        os.makedirs(pixmap_path)
+        shutil.copy("lorris.png", pixmap_path)
+
         qtdeps = get_qt_deps(tag)
-        version = "0.%d-%s+1" % (get_version(root), tag)
+        version = "0.%d-%s+%d" % (get_version(root), tag, dist_ver)
         control_dir = os.path.join(tmpdir, "DEBIAN")
         control = os.path.join(control_dir, "control")
         os.makedirs(control_dir)

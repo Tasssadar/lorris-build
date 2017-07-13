@@ -66,6 +66,15 @@ def copy_bin_with_deps(bin_path, dest, search_paths, copied):
         dllname = line[len("DLL Name: "):]
         copy_dep(dllname, dest, search_paths, copied)
 
+def get_version(root):
+    with open(os.path.join(root, "src", "revision.h"), "r") as f:
+        tag = "REVISION "
+        for l in f:
+            idx = l.find(tag)
+            if idx != -1:
+                return int(l[idx+len(tag):])
+    raise Exception("Failed to parse revision.h!")
+
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print "Usage: %s LORRIS_ROOT DEST_DIR" % sys.argv[0]
@@ -92,3 +101,5 @@ if __name__ == "__main__":
     shutil.copy("%s/translations/qtbase_cs.qm" % QT_HOME, dest_dir + "/translations")
     shutil.copy("updater.exe", dest_dir + "/")
 
+    with open("%s/version.txt" % dest_dir, "w") as f:
+        f.write("%d\n" % get_version(lorris_root))

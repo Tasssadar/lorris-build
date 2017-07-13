@@ -81,6 +81,8 @@ if $genapt; then
         done
     done
 
+    rm -rf "${APT_ROOT}/cache"
+    mkdir -p "${APT_ROOT}/cache"
     apt-ftparchive generate "${DOCKER_ROOT}/apt/ftparchive.conf"
     for dist in $DISTS; do
         if ! [ -f "${DOCKER_ROOT}/apt/${dist}.conf" ]; then
@@ -93,4 +95,6 @@ if $genapt; then
         cat "${DOCKER_ROOT}/apt/keys/pass.gpg" | gpg --yes --batch --passphrase-fd 0 --digest-algo SHA512 -abs -u $GPG_KEY_NAME -o "${rel}.gpg" "$rel"
         cat "${DOCKER_ROOT}/apt/keys/pass.gpg" | gpg --yes --batch --passphrase-fd 0 --digest-algo SHA512 --clearsign -u $GPG_KEY_NAME --output "$inrel" "$rel"
     done
+
+    rm -rf "${APT_ROOT}/cache"
 fi

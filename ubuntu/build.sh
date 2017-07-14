@@ -11,6 +11,14 @@ REAL_POOL="${APT_ROOT}/pool"
 DOCKER_ROOT="/home/tassadar/dockertest/ubuntu"
 GPG_KEY_NAME="tasemnice-apt"
 
+if [ "$(whoami)" != "root" ]; then
+    echo
+    echo "ERROR: Run this script with sudo, it needs the rights to be able to"
+    echo "copy & move files from the docker images"
+    echo
+    exit 1
+fi
+
 build=true
 genapt=true
 ignoretmp=false

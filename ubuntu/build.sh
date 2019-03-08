@@ -3,13 +3,21 @@ set -eu
 #set -x
 
 ARCHS="amd64 i386"
-DISTS="trusty xenial zesty"
+DISTS="trusty xenial artful"
 STABLE_DIST="xenial"
 APT_ROOT="/opt/lorris-apt/ubuntu"
 TMP_POOL="${APT_ROOT}/tmp-pool"
 REAL_POOL="${APT_ROOT}/pool"
 DOCKER_ROOT="/home/tassadar/dockertest/ubuntu"
 GPG_KEY_NAME="tasemnice-apt"
+
+if [ "$(whoami)" != "root" ]; then
+    echo
+    echo "ERROR: Run this script with sudo, it needs the rights to be able to"
+    echo "copy & move files from the docker images"
+    echo
+    exit 1
+fi
 
 build=true
 genapt=true
@@ -59,6 +67,10 @@ if $build; then
             cp -a "${DOCKER_ROOT}/build" "${DOCKER_ROOT}/docker-${arch}/"
             docker build --build-arg DIST_TAG=$dist -t "$img" "${DOCKER_ROOT}/docker-${arch}"
             docker run -t -e DIST_VER=${ver} -v "${TMP_POOL}:/apt-pool" "$img"
+
+            if [ -d "${DOCKER_ROOT}/extra/${dist}" ]; then
+                cp -a $(find "${DOCKER_ROOT}/extra/${dist}" -name *_${arch}.deb) "${TMP_POOL}/dists/${dist}/" || true
+            fi
         done
     done
 

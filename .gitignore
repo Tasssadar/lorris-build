@@ -1,3 +1,14 @@
+.vscode
+
 pass.gpg
 secret.gpg
 key.priv
+
+win32/lorris-release/Lorris.zip
+win32/lorris-release/version.txt
+
+
+ubuntu/extra/*
+!ubuntu/extra/.keepingit
+
+ubuntu/docker-*/build

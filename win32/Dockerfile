@@ -1,15 +1,15 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 RUN apt-get update && \
     apt-get install -y mingw-w64-i686-dev mingw-w64-x86-64-dev mingw-w64 mingw-w64-tools \
-    flex bison make build-essential python git curl zip && \
+    flex bison make build-essential python git curl zip xz-utils && \
     apt-get clean
 
 WORKDIR /qtbuild
-ENV QT_VER=5.6.2
+ENV QT_VER=5.6.3
 ENV THREADS=2
 
-RUN curl -L https://download.qt.io/archive/qt/5.6/$QT_VER/single/qt-everywhere-opensource-src-$QT_VER.tar.gz | gzip -d | tar -x && \
+RUN curl -L https://download.qt.io/archive/qt/5.6/$QT_VER/single/qt-everywhere-opensource-src-$QT_VER.tar.xz | xz -d | tar -x && \
     cd qt-everywhere-opensource-src-$QT_VER && \
     ./configure -xplatform win32-g++ -device-option CROSS_COMPILE=i686-w64-mingw32- -opensource -confirm-license \
     -qt-zlib -qt-libpng -qt-freetype -prefix /usr/local/qt32 -release -nomake examples -nomake tools -nomake tests \

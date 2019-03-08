@@ -25,11 +25,11 @@ def init_search_paths_tools(lorris_root):
     if build == "x86_64":
         QT_HOME="/usr/local/qt64"
         res["%s/dep/python2.7/lib64" % lorris_root] = None
-        res["/usr/lib/gcc/x86_64-w64-mingw32/5.3-win32"] = None
+        res["/usr/lib/gcc/x86_64-w64-mingw32/7.3-win32"] = None
     else:
         QT_HOME="/usr/local/qt32"
         res["%s/dep/python2.7/lib" % lorris_root] = None
-        res["/usr/lib/gcc/i686-w64-mingw32/5.3-win32"] = None
+        res["/usr/lib/gcc/i686-w64-mingw32/7.3-win32"] = None
     res["%s/bin" % QT_HOME] = None
     res["%s/plugins/platforms" % QT_HOME] = None
     DLL_DUMP = build + DLL_DUMP

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-DOCKER_ROOT="/home/tassadar/dockertest/win32"
+DOCKER_ROOT="/home/tassadar/lorris-build/win32"
 IMG_NAME="lorris-build_windows-i386"
 DESTDIR="${DOCKER_ROOT}/lorris-release"
 KEYS="${DOCKER_ROOT}/keys"
@@ -45,13 +45,17 @@ if $release; then
 
     version="$(cat ${DESTDIR}/version.txt)"
 
-    echo "Releasing verion $version"
+    echo "Releasing version $version"
 
     cp "${DESTDIR}/Lorris.zip" "${WWW}/Lorris.zip"
+    hash="$(sha256sum ${WWW}/Lorris.zip | head -c64)"
+
+    mkdir -p "${WWW}/archive"
+    cp "${DESTDIR}/Lorris.zip" "${WWW}/archive/Lorris-v${version}.zip"
+    echo "${hash}  Lorris-v${version}.zip" >> "${WWW}/archive/sha256sum.txt"
 
     "${KEYS}/signtool" sign "${WWW}/Lorris.zip" "${KEYS}/key.priv" "${WWW}/Lorris.zip.sig"
 
-    hash="$(sha256sum ${WWW}/Lorris.zip | head -c64)"
     echo "release $version ${ADDR}/Lorris.zip $hash" > "${WWW}/updater_manifest.txt"
     echo "dev $version ${ADDR}/Lorris.zip $hash" >> "${WWW}/updater_manifest.txt"
     echo "changelog1 ${ADDR}/changelog.txt" >> "${WWW}/updater_manifest.txt"

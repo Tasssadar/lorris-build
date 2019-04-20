@@ -46,7 +46,7 @@ build() {
     sfx="$1"
     rm -f "${DESTDIR}${sfx}/Lorris.zip" "${DESTDIR}${sfx}/version.txt"
     docker build -t "${IMG_NAME}${sfx}" -f Dockerfile.${sfx} "${DOCKER_ROOT}"
-    docker run -t -v "${DESTDIR}${sfx}:/lorris-release" "${IMG_NAME}${sfx}"
+    docker run -t -v --rm "${DESTDIR}${sfx}:/lorris-release" "${IMG_NAME}${sfx}"
 }
 
 release() {

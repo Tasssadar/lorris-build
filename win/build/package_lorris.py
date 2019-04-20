@@ -10,7 +10,10 @@ DLL_DUMP="-w64-mingw32-objdump  -x \"%s\" | grep -o 'DLL Name: [a-zA-Z0-9\\._+-]
 STRIP="-w64-mingw32-strip  %s"
 QT_HOME=""
 
-def init_search_paths_tools(lorris_root):
+def is_x86_64(lorris_root):
+    return subprocess.call("file %s/%s | grep -q x86-64" % (lorris_root, BIN_PATH), shell=True) == 0
+
+def init_search_paths_tools(lorris_root, is64):
     global DLL_DUMP
     global STRIP
     global QT_HOME
@@ -21,8 +24,8 @@ def init_search_paths_tools(lorris_root):
         "%s/dep/qscintilla2/lib" % lorris_root: None,
     }
 
-    build = "x86_64" if subprocess.call("file %s/%s | grep -q x86-64" % (lorris_root, BIN_PATH), shell=True) == 0 else "i686"
-    if build == "x86_64":
+    build = "x86_64" if is64 else "i686"
+    if is64:
         QT_HOME="/usr/local/qt64"
         res["%s/dep/python2.7/lib64" % lorris_root] = None
         res["/usr/lib/gcc/x86_64-w64-mingw32/7.3-win32"] = None
@@ -90,7 +93,8 @@ if __name__ == "__main__":
             pass
 
     copied = {}
-    search_paths = init_search_paths_tools(lorris_root)
+    is64 = is_x86_64(lorris_root)
+    search_paths = init_search_paths_tools(lorris_root, is64)
 
     print "Binaries:"
     copy_bin_with_deps(os.path.join(lorris_root, BIN_PATH), dest_dir, search_paths, copied)
@@ -99,7 +103,7 @@ if __name__ == "__main__":
     shutil.copy("%s/translations/Lorris.cs_CZ.qm" % lorris_root, dest_dir + "/translations")
     shutil.copy("%s/translations/qt_cs.qm" % QT_HOME, dest_dir + "/translations")
     shutil.copy("%s/translations/qtbase_cs.qm" % QT_HOME, dest_dir + "/translations")
-    shutil.copy("updater.exe", dest_dir + "/")
+    shutil.copy("updater64.exe" if is64 else "updater.exe", dest_dir + "/updater.exe")
 
     with open("%s/version.txt" % dest_dir, "w") as f:
         f.write("%d\n" % get_version(lorris_root))

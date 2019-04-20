@@ -2,21 +2,37 @@
 set -eu
 
 DOCKER_ROOT="/home/tassadar/lorris-build/win32"
-IMG_NAME="lorris-build_windows-i386"
+IMG_NAME="lorris-build_windows"
 DESTDIR="${DOCKER_ROOT}/lorris-release"
 KEYS="${DOCKER_ROOT}/keys"
 WWW="/www/lorris"
 ADDR="http://tasemnice.eu/lorris"
 
-build=true
-release=true
+build32=true
+build64=true
+release32=true
+release64=true
 while [ $# -ge 1 ]; do
     case "$1" in
     --nobuild)
-        build=false
+        build32=false
+        build64=false
         ;;
     --norelease)
-        release=false
+        release32=false
+        release64=false
+        ;;
+    --nobuild32)
+        build32=false
+        ;;
+    --norelease32)
+        release32=false
+        ;;
+    --nobuild64)
+        build64=false
+        ;;
+    --norelease64)
+        release64=false
         ;;
     *)
         echo "Unknown argument: $1"
@@ -26,13 +42,19 @@ while [ $# -ge 1 ]; do
     shift
 done
 
-if $build; then
-    rm -f "${DESTDIR}/Lorris.zip" "${DESTDIR}/version.txt"
-    docker build -t "${IMG_NAME}" "${DOCKER_ROOT}"
-    docker run -t -v "${DESTDIR}:/lorris-release" "${IMG_NAME}"
-fi
+build() {
+    sfx="$1"
+    rm -f "${DESTDIR}${sfx}/Lorris.zip" "${DESTDIR}${sfx}/version.txt"
+    docker build -t "${IMG_NAME}${sfx}" -f Dockerfile.${sfx} "${DOCKER_ROOT}"
+    docker run -t -v "${DESTDIR}${sfx}:/lorris-release" "${IMG_NAME}${sfx}"
+}
 
-if $release; then
+release() {
+    sfx="$1"
+    DESTDIR="${DESTDIR}${sfx}"
+    ADDR="${ADDR}${sfx}"
+    WWW="${WWW}${sfx}"
+
     if ! [ -f "${DESTDIR}/Lorris.zip" ]; then
         echo "${DESTDIR}/Lorris.zip not found!"
         exit 1
@@ -62,4 +84,20 @@ if $release; then
     echo "changelog2 ${ADDR}/changelog.txt" >> "${WWW}/updater_manifest.txt"
 
     "${KEYS}/signtool" sign "${WWW}/updater_manifest.txt" "${KEYS}/key.priv" "${WWW}/updater_manifest.txt.sig"
+}
+
+if $build32; then
+    build 32
+fi
+
+if $build64; then
+    build 64
+fi
+
+if $release32; then
+    (release 32)
+fi
+
+if $release64; then
+    (release 64)
 fi

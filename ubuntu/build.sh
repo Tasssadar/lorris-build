@@ -3,12 +3,12 @@ set -eu
 #set -x
 
 ARCHS="amd64 i386"
-DISTS="trusty xenial artful"
-STABLE_DIST="xenial"
+DISTS="trusty xenial artful bionic"
+STABLE_DIST="bionic"
 APT_ROOT="/opt/lorris-apt/ubuntu"
 TMP_POOL="${APT_ROOT}/tmp-pool"
 REAL_POOL="${APT_ROOT}/pool"
-DOCKER_ROOT="/home/tassadar/dockertest/ubuntu"
+DOCKER_ROOT="/home/tassadar/lorris-build/ubuntu"
 GPG_KEY_NAME="tasemnice-apt"
 
 if [ "$(whoami)" != "root" ]; then
@@ -66,7 +66,7 @@ if $build; then
             img="lorris-build_${dist}-${arch}"
             cp -a "${DOCKER_ROOT}/build" "${DOCKER_ROOT}/docker-${arch}/"
             docker build --build-arg DIST_TAG=$dist -t "$img" "${DOCKER_ROOT}/docker-${arch}"
-            docker run -t -e DIST_VER=${ver} -v "${TMP_POOL}:/apt-pool" "$img"
+            docker run -t --rm -e DIST_VER=${ver} -v "${TMP_POOL}:/apt-pool" "$img"
 
             if [ -d "${DOCKER_ROOT}/extra/${dist}" ]; then
                 cp -a $(find "${DOCKER_ROOT}/extra/${dist}" -name *_${arch}.deb) "${TMP_POOL}/dists/${dist}/" || true

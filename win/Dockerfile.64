@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 
 RUN apt-get update && \
-    apt-get install -y mingw-w64-x86-64-dev mingw-w64 mingw-w64-tools \
+    apt-get install -y mingw-w64-i686-dev mingw-w64-x86-64-dev mingw-w64 mingw-w64-tools \
     flex bison make build-essential python git curl zip xz-utils && \
     apt-get clean
 

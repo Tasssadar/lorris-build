@@ -11,5 +11,5 @@ if [ "$(whoami)" != "root" ]; then
     exit 1
 fi
 
-sudo -u "$WIN_USER" ./win32/build.sh
+sudo -u "$WIN_USER" ./win/build.sh
 ./ubuntu/build.sh

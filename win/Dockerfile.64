@@ -14,7 +14,7 @@ RUN curl -L http://ftp.fau.de/qtproject/archive/qt/5.12/$QT_VER/single/qt-everyw
     ./configure -xplatform win32-g++ -device-option CROSS_COMPILE=x86_64-w64-mingw32- -opensource -confirm-license \
         -qt-zlib -qt-libpng -qt-freetype -prefix /usr/local/qt64 -release -nomake examples -nomake tools -nomake tests \
         -skip webengine -skip activeqt -skip qt3d -skip qtcanvas3d -skip qtmultimedia -skip qtwebglplugin \
-        -skip qtlocation -opengl desktop \
+        -skip qtlocation -skip winextras -opengl desktop \
         QMAKE_CXXFLAGS+="-march=nehalem -mtune=haswell" QMAKE_CFLAGS+="-march=nehalem -mtune=haswell" && \
     make -j$THREADS && \
     make install && \
@@ -23,6 +23,7 @@ RUN curl -L http://ftp.fau.de/qtproject/archive/qt/5.12/$QT_VER/single/qt-everyw
 ADD /build /build
 WORKDIR /build
 
+ENV THREADS=$THREADS
 ENTRYPOINT git clone --depth=1 --recursive https://github.com/Tasssadar/Lorris.git && \
     cd Lorris && \
     /usr/local/qt64/bin/qmake CONFIG+=release QMAKE_CXXFLAGS+="-march=nehalem -mtune=haswell" QMAKE_CFLAGS+="-march=nehalem -mtune=haswell" -r && \

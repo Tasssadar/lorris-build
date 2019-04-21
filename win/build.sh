@@ -1,12 +1,12 @@
 #!/bin/bash
 set -eu
 
-DOCKER_ROOT="/home/tassadar/lorris-build/win32"
+DOCKER_ROOT="/home/tassadar/lorris-build/win"
 IMG_NAME="lorris-build_windows"
 DESTDIR="${DOCKER_ROOT}/lorris-release"
 KEYS="${DOCKER_ROOT}/keys"
 WWW="/www/lorris"
-ADDR="http://tasemnice.eu/lorris"
+ADDR="https://tasemnice.eu/lorris"
 
 build32=true
 build64=true
@@ -46,7 +46,7 @@ build() {
     sfx="$1"
     rm -f "${DESTDIR}${sfx}/Lorris.zip" "${DESTDIR}${sfx}/version.txt"
     docker build -t "${IMG_NAME}${sfx}" -f Dockerfile.${sfx} "${DOCKER_ROOT}"
-    docker run -t -v --rm "${DESTDIR}${sfx}:/lorris-release" "${IMG_NAME}${sfx}"
+    docker run -t --rm -v "${DESTDIR}${sfx}:/lorris-release" "${IMG_NAME}${sfx}"
 }
 
 release() {

@@ -21,6 +21,7 @@ RUN curl -L https://download.qt.io/archive/qt/5.6/$QT_VER/single/qt-everywhere-o
 ADD /build /build
 WORKDIR /build
 
+ENV THREADS=$THREADS
 ENTRYPOINT git clone --depth=1 --recursive https://github.com/Tasssadar/Lorris.git && \
     cd Lorris && \
     /usr/local/qt32/bin/qmake CONFIG+=release QMAKE_CXXFLAGS+="-march=pentium4 -mfpmath=sse -msse2" QMAKE_CFLAGS+="-march=pentium4 -mfpmath=sse -msse2" -r && \

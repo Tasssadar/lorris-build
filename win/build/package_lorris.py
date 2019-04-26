@@ -29,12 +29,14 @@ def init_search_paths_tools(lorris_root, is64):
         QT_HOME="/usr/local/qt64"
         res["%s/dep/python2.7/lib64" % lorris_root] = None
         res["/usr/lib/gcc/x86_64-w64-mingw32/7.3-win32"] = None
+        res["%s/plugins/styles" % QT_HOME] = None
     else:
         QT_HOME="/usr/local/qt32"
         res["%s/dep/python2.7/lib" % lorris_root] = None
         res["/usr/lib/gcc/i686-w64-mingw32/7.3-win32"] = None
     res["%s/bin" % QT_HOME] = None
     res["%s/plugins/platforms" % QT_HOME] = None
+
     DLL_DUMP = build + DLL_DUMP
     STRIP = build + STRIP
 
@@ -85,7 +87,11 @@ if __name__ == "__main__":
 
     lorris_root = sys.argv[1]
     dest_dir = sys.argv[2]
+    is64 = is_x86_64(lorris_root)
+
     subdirs = [ "", "platforms", "translations" ]
+    if is64:
+        subdirs.append("styles")
     for d in subdirs:
         try:
             os.makedirs(os.path.join(dest_dir, d))
@@ -93,12 +99,13 @@ if __name__ == "__main__":
             pass
 
     copied = {}
-    is64 = is_x86_64(lorris_root)
     search_paths = init_search_paths_tools(lorris_root, is64)
 
     print "Binaries:"
     copy_bin_with_deps(os.path.join(lorris_root, BIN_PATH), dest_dir, search_paths, copied)
     copy_dep("qwindows.dll", dest_dir + "/platforms", search_paths, copied)
+    if is64:
+        copy_dep("qwindowsvistastyle.dll", dest_dir + "/styles", search_paths, copied)
 
     shutil.copy("%s/translations/Lorris.cs_CZ.qm" % lorris_root, dest_dir + "/translations")
     shutil.copy("%s/translations/qt_cs.qm" % QT_HOME, dest_dir + "/translations")

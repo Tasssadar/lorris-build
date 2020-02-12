@@ -33,7 +33,7 @@ ENTRYPOINT git clone --depth=1 --recursive https://github.com/Tasssadar/Lorris.g
     make -j$THREADS && \
     cd .. && \
     python2 ./package_lorris.py Lorris package && \
-    cd package && zip -r ../Lorris.zip * && \
+    cd package && zip -9 -r ../Lorris.zip * && \
     cp -v ../Lorris.zip /lorris-release/ && \
     cp -v version.txt /lorris-release/
 

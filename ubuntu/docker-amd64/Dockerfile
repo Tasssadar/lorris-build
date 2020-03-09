@@ -1,6 +1,8 @@
 ARG DIST_TAG=trusty
 FROM ubuntu:$DIST_TAG
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && \
     apt-get install -y g++ make libudev-dev python2.7-dev qt5-default qttools5-dev qtscript5-dev pkg-config git dpkg && \
     apt-get clean

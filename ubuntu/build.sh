@@ -3,7 +3,7 @@ set -eu
 #set -x
 
 ARCHS="amd64 i386"
-DISTS="trusty xenial artful bionic"
+DISTS="xenial bionic eoan"
 STABLE_DIST="bionic"
 APT_ROOT="/opt/lorris-apt/ubuntu"
 TMP_POOL="${APT_ROOT}/tmp-pool"
@@ -108,9 +108,9 @@ if $genapt; then
         rel="${APT_ROOT}/dists/${dist}/Release"
         inrel="${APT_ROOT}/dists/${dist}/InRelease"
         apt-ftparchive -c "${DOCKER_ROOT}/apt/${dist}.conf" release "${APT_ROOT}/dists/${dist}" > "$rel"
-        cat "${DOCKER_ROOT}/apt/keys/pass.gpg" | gpg --yes --batch --passphrase-fd 0 --digest-algo SHA512 -abs -u $GPG_KEY_NAME -o "${rel}.gpg" "$rel"
-        cat "${DOCKER_ROOT}/apt/keys/pass.gpg" | gpg --yes --batch --passphrase-fd 0 --digest-algo SHA512 --clearsign -u $GPG_KEY_NAME --output "$inrel" "$rel"
+        cat "${DOCKER_ROOT}/apt/keys/pass.gpg" | gpg --batch --pinentry-mode loopback --yes --passphrase-fd 0 --digest-algo SHA512 -abs -u $GPG_KEY_NAME -o "${rel}.gpg" "$rel"
+        cat "${DOCKER_ROOT}/apt/keys/pass.gpg" | gpg --batch --pinentry-mode loopback --yes --passphrase-fd 0 --digest-algo SHA512 --clearsign -u $GPG_KEY_NAME --output "$inrel" "$rel"
     done
 
-    rm -rf "${APT_ROOT}/cache"
+     rm -rf "${APT_ROOT}/cache"
 fi

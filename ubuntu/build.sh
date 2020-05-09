@@ -3,8 +3,8 @@ set -eu
 #set -x
 
 ARCHS="amd64 i386"
-DISTS="xenial bionic eoan"
-STABLE_DIST="bionic"
+DISTS="xenial bionic eoan focal"
+STABLE_DIST="focal"
 APT_ROOT="/opt/lorris-apt/ubuntu"
 TMP_POOL="${APT_ROOT}/tmp-pool"
 REAL_POOL="${APT_ROOT}/pool"
@@ -45,7 +45,7 @@ while [ $# -ge 1 ]; do
     shift
 done
 
-if ! [ -f "${DOCKER_ROOT}/apt/keys/pass.gpg" ]; then
+if $genapt && ! [ -f "${DOCKER_ROOT}/apt/keys/pass.gpg" ]; then
     echo "The gpg passphrase file ${DOCKER_ROOT}/apt/pass.gpg does not exists."
     exit 1
 fi
@@ -63,9 +63,14 @@ if $build; then
             echo "BUILDING ${dist}-${arch}"
             echo
 
+            if [ $arch = "i386" ] && [ $dist = "focal" ]; then
+                echo "Skipping, no qtscript5-dev"
+                continue
+            fi
+
             img="lorris-build_${dist}-${arch}"
             cp -a "${DOCKER_ROOT}/build" "${DOCKER_ROOT}/docker-${arch}/"
-            docker build --build-arg DIST_TAG=$dist -t "$img" "${DOCKER_ROOT}/docker-${arch}"
+            docker build --pull --build-arg DIST_TAG=$dist -t "$img" "${DOCKER_ROOT}/docker-${arch}"
             docker run -t --rm -e DIST_VER=${ver} -v "${TMP_POOL}:/apt-pool" "$img"
 
             if [ -d "${DOCKER_ROOT}/extra/${dist}" ]; then

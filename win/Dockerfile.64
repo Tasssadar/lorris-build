@@ -1,4 +1,6 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
     apt-get install -y mingw-w64-i686-dev mingw-w64-x86-64-dev mingw-w64 mingw-w64-tools \
@@ -6,7 +8,7 @@ RUN apt-get update && \
     apt-get clean
 
 WORKDIR /qtbuild
-ARG QT_VER=5.12.3
+ARG QT_VER=5.12.8
 ARG THREADS=2
 
 RUN curl -L http://ftp.fau.de/qtproject/archive/qt/5.12/$QT_VER/single/qt-everywhere-src-$QT_VER.tar.xz | xz -d | tar -x && \

@@ -28,7 +28,7 @@ def init_search_paths_tools(lorris_root, is64):
     if is64:
         QT_HOME="/usr/local/qt64"
         res["%s/dep/python2.7/lib64" % lorris_root] = None
-        res["/usr/lib/gcc/x86_64-w64-mingw32/7.3-win32"] = None
+        res["/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32"] = None
         res["%s/plugins/styles" % QT_HOME] = None
     else:
         QT_HOME="/usr/local/qt32"

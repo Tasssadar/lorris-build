@@ -25,13 +25,17 @@ RUN curl -L http://ftp.fau.de/qtproject/archive/qt/5.12/$QT_VER/single/qt-everyw
 ADD /build /build
 WORKDIR /build
 
-ENV THREADS=$THREADS
+ENV \
+    THREADS=$THREADS \
+    CFLAGS="-march=nehalem -mtune=haswell -O3 -funsafe-math-optimizations -fexcess-precision=fast -fno-math-errno -flto"
+
 ENTRYPOINT git clone --depth=1 --recursive https://github.com/Tasssadar/Lorris.git && \
     cd Lorris && \
     /usr/local/qt64/bin/qmake -r CONFIG+=release \
         QMAKE_CXXFLAGS_RELEASE-="-O2" QMAKE_CFLAGS_RELEASE-="-O2" \
-        QMAKE_CXXFLAGS+="-march=nehalem -mtune=haswell -O3 -funsafe-math-optimizations -fexcess-precision=fast -fno-math-errno" \
-          QMAKE_CFLAGS+="-march=nehalem -mtune=haswell -O3 -funsafe-math-optimizations -fexcess-precision=fast -fno-math-errno" && \
+        QMAKE_CXXFLAGS+="$CFLAGS" \
+          QMAKE_CFLAGS+="$CFLAGS" \
+          QMAKE_LFLAGS+="$CFLAGS"  && \
     make -j$THREADS && \
     cd .. && \
     python2 ./package_lorris.py Lorris package && \

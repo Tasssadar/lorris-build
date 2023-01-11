@@ -11,3 +11,6 @@ ubuntu/extra/*
 !ubuntu/extra/.keepingit
 
 ubuntu/docker-*/build
+
+*~
+private-keys-v1.d

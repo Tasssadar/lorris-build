@@ -3,8 +3,8 @@ set -eu
 #set -x
 
 ARCHS="amd64 i386"
-DISTS="xenial bionic eoan focal"
-STABLE_DIST="focal"
+DISTS="xenial bionic focal jammy"
+STABLE_DIST="jammy"
 APT_ROOT="/opt/lorris-apt/ubuntu"
 TMP_POOL="${APT_ROOT}/tmp-pool"
 REAL_POOL="${APT_ROOT}/pool"
@@ -63,7 +63,7 @@ if $build; then
             echo "BUILDING ${dist}-${arch}"
             echo
 
-            if [ $arch = "i386" ] && [ $dist = "focal" ]; then
+            if [ $arch = "i386" ] && ([ $dist = "focal" ] || [ $dist = "jammy" ]); then
                 echo "Skipping, no qtscript5-dev"
                 continue
             fi
@@ -95,6 +95,7 @@ if $genapt; then
     fi
 
     DISTS="$DISTS stable"
+    
 
     for arch in $ARCHS; do
         for dist in $DISTS; do
@@ -113,8 +114,8 @@ if $genapt; then
         rel="${APT_ROOT}/dists/${dist}/Release"
         inrel="${APT_ROOT}/dists/${dist}/InRelease"
         apt-ftparchive -c "${DOCKER_ROOT}/apt/${dist}.conf" release "${APT_ROOT}/dists/${dist}" > "$rel"
-        cat "${DOCKER_ROOT}/apt/keys/pass.gpg" | gpg --batch --pinentry-mode loopback --yes --passphrase-fd 0 --digest-algo SHA512 -abs -u $GPG_KEY_NAME -o "${rel}.gpg" "$rel"
-        cat "${DOCKER_ROOT}/apt/keys/pass.gpg" | gpg --batch --pinentry-mode loopback --yes --passphrase-fd 0 --digest-algo SHA512 --clearsign -u $GPG_KEY_NAME --output "$inrel" "$rel"
+        cat "${DOCKER_ROOT}/apt/keys/pass.gpg" | GNUPGHOME="${DOCKER_ROOT}/apt/keys" gpg --batch --pinentry-mode loopback --yes --passphrase-fd 0 --digest-algo SHA512 -abs -u $GPG_KEY_NAME -o "${rel}.gpg" "$rel"
+        cat "${DOCKER_ROOT}/apt/keys/pass.gpg" | GNUPGHOME="${DOCKER_ROOT}/apt/keys" gpg --batch --pinentry-mode loopback --yes --passphrase-fd 0 --digest-algo SHA512 --clearsign -u $GPG_KEY_NAME --output "$inrel" "$rel"
     done
 
      rm -rf "${APT_ROOT}/cache"

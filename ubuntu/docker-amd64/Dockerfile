@@ -4,13 +4,14 @@ FROM ubuntu:$DIST_TAG
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
-    apt-get install -y g++ make libudev-dev python2.7-dev qt5-default qttools5-dev qtscript5-dev pkg-config git dpkg && \
+    apt-get install -y g++ make libudev-dev python2.7-dev qtbase5-dev qtchooser qttools5-dev qtscript5-dev pkg-config git dpkg && \
+    (apt-get install -y qt5-default || true) && \
     apt-get clean
 
 ADD /build /build
 WORKDIR /build
 
-ENV THREADS=2
+ENV THREADS=3
 
 ARG DIST_TAG
 ENV DIST_TAG $DIST_TAG

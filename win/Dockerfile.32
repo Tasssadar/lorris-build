@@ -9,7 +9,7 @@ RUN apt-get update && \
 
 WORKDIR /qtbuild
 ARG QT_VER=5.6.3
-ARG THREADS=2
+ARG THREADS=3
 
 RUN curl -L https://tasemnice.eu/perm/qt-everywhere-opensource-src-5.6.3.tar.xz | xz -d | tar -x && \
     cd qt-everywhere-opensource-src-$QT_VER && \

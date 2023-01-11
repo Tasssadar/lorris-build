@@ -10,7 +10,7 @@ RUN apt-get update && \
 ADD /build /build
 WORKDIR /build
 
-ENV THREADS=2
+ENV THREADS=3
 
 ARG DIST_TAG
 ENV DIST_TAG $DIST_TAG
